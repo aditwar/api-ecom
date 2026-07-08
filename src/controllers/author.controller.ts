@@ -7,10 +7,9 @@ import path from 'path';
 import fs from 'fs';
 import Handlebars from 'handlebars';
 
+const base_url = process.env.BASE_URL_API;
 const secret_key = process.env.SECRET_KEY_JWT;
-
 const mailuser = process.env.MAIL_USER;
-
 const mailpass = process.env.MAIL_PASS;
 
 export class AuthorController {
@@ -201,7 +200,7 @@ export class AuthorController {
         where: { email: req.author?.email },
       });
 
-      const link = `http://localhost:8000/api/public/avatar/${req?.file?.filename}`;
+      const link = `${base_url}/public/avatar/${req?.file?.filename}`;
 
       await prisma.author.update({
         where: { email: req.author!.email },
@@ -225,7 +224,7 @@ export class AuthorController {
       const { name, email, password, role, avatar, usersEmail } = req.body;
 
       const link = req.file
-        ? `http://localhost:8000/api/public/avatar/${req.file.filename}`
+        ? `${base_url}/public/avatar/${req.file.filename}`
         : avatar === 'null'
           ? null
           : avatar;

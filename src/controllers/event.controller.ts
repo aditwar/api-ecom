@@ -3,10 +3,12 @@ import prisma from '../prisma';
 import { Prisma, Category, Location } from '@prisma/client';
 import { boolean } from 'yup';
 
+const base_url = process.env.BASE_URL_API;
+
 export class EventController {
   async createEvent(req: Request, res: Response) {
     try {
-      const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+      const link = `${base_url}/public/events/${req?.file?.filename}`;
 
       const {
         title,
@@ -156,7 +158,7 @@ export class EventController {
   async updateEvent(req: Request, res: Response) {
     try {
       if (!req.file) throw 'UPLOAD FILE dulu kocak';
-      const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+      const link = `${base_url}/public/events/${req?.file?.filename}`;
 
       const eventId = Number(req.params.id);
       if (isNaN(eventId)) {
@@ -235,7 +237,7 @@ export class EventController {
   async editImage(req: Request, res: Response) {
     try {
       if (!req.file) throw 'UPLOAD FILE dulu kocak';
-      const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+      const link = `${base_url}/public/events/${req?.file?.filename}`;
       const existingImage = await prisma.event.findUnique({
         where: { id: +req.params.id },
       });
