@@ -7,28 +7,24 @@ exports.OrderController = void 0;
 const prisma_1 = __importDefault(require("../prisma"));
 class OrderController {
     async createOrder(req, res) {
-        var _a;
         try {
-            console.log("Author:", req.author);
-            if (!((_a = req.author) === null || _a === void 0 ? void 0 : _a.email))
-                throw "Author tidak ditemukan";
+            if (!req.author?.email)
+                throw 'Author tidak ditemukan';
             const reqauthor = await prisma_1.default.author.findUnique({
                 where: { email: req.author.email },
             });
             if (!reqauthor)
-                throw "SALAH! Email tidak ditemukan yaa ...";
+                throw 'SALAH! Email tidak ditemukan yaa ...';
             const { pricePaid, eventId } = req.body;
-            if (!eventId || !pricePaid)
-                throw "Event ID PricePaid wajib dikirim di body";
-            if (!req.params.slug)
-                throw "Slug tidak ditemukan";
+            if (!eventId)
+                throw 'Event ID wajib dikirim di body';
             const event = await prisma_1.default.event.findUnique({
                 where: { slug: req.params.slug },
             });
             if (!event)
-                throw "Slug tidak ditemukan";
+                throw 'SALAH! Event Slug tidak ditemukan';
             if (event.id !== Number(eventId)) {
-                throw "SALAH! Event ID tidak cocok dengan slug";
+                throw 'SALAH! Event ID tidak cocok dengan slug';
             }
             const order = await prisma_1.default.order.create({
                 data: {
@@ -38,14 +34,14 @@ class OrderController {
                 },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Order berhasil dibuat",
+                status: 'ok',
+                msg: 'Order berhasil dibuat',
                 order,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.toString(),
             });
         }
@@ -59,14 +55,14 @@ class OrderController {
                 },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Berhasil get Orders",
+                status: 'ok',
+                msg: 'Berhasil get Orders',
                 orders,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err,
             });
         }
@@ -81,16 +77,16 @@ class OrderController {
                 },
             });
             if (!order)
-                throw "SALAH! ID Order tidak ditemukan";
+                throw 'SALAH! ID Order tidak ditemukan';
             res.status(200).send({
-                status: "ok",
-                msg: "Berhasil get ID Order",
+                status: 'ok',
+                msg: 'Berhasil get ID Order',
                 order,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err,
             });
         }
@@ -101,15 +97,15 @@ class OrderController {
                 where: { id: Number(req.params.id) },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Order terhapus",
+                status: 'ok',
+                msg: 'Order terhapus',
                 deleted,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
-                msg: "SALAH! ID Order tidak ditemukan atau sudah dihapus",
+                status: 'error',
+                msg: 'SALAH! ID Order tidak ditemukan atau sudah dihapus',
             });
         }
     }

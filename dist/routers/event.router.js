@@ -12,12 +12,12 @@ class EventRouter {
         this.initializeRoutes();
     }
     initializeRoutes() {
-        this.router.post("/", token_1.verifyToken, (0, uploader_1.uploader)("event-", "/events").single("image"), this.eventController.createEvent);
-        this.router.get("/", this.eventController.getEvent);
-        this.router.get("/:slug", this.eventController.getEventSlug);
-        this.router.patch("/:id/editimage", token_1.verifyToken, (0, uploader_1.uploader)("event", "/events").single("image"), this.eventController.editImage);
-        this.router.patch("/:id", token_1.verifyToken, (0, uploader_1.uploader)("event", "/events").single("image"), this.eventController.updateEvent);
-        this.router.delete("/:id", this.eventController.deleteEvent);
+        this.router.post('/', token_1.verifyToken, (0, uploader_1.uploader)('event-', '/events').single('image'), this.eventController.createEvent);
+        this.router.get('/', this.eventController.getEvent);
+        this.router.get('/:slug', this.eventController.getEventSlug);
+        this.router.patch('/:id/editimage', token_1.verifyToken, (0, uploader_1.uploader)('event', '/events').single('image'), this.eventController.editImage);
+        this.router.patch('/:id', token_1.verifyToken, (0, uploader_1.uploader)('event', '/events').single('image'), this.eventController.updateEvent);
+        this.router.delete('/:id', this.eventController.deleteEvent);
     }
     getRouter() {
         return this.router;

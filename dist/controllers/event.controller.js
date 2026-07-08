@@ -8,24 +8,23 @@ const prisma_1 = __importDefault(require("../prisma"));
 const client_1 = require("@prisma/client");
 class EventController {
     async createEvent(req, res) {
-        var _a;
         try {
-            const link = `http://localhost:8000/api/public/events/${(_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.filename}`;
-            const { title, _slug, priceRupiah, date, location, seats, isAvailable, category, content, } = req.body;
+            const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+            const { title, slug, priceRupiah, date, location, seats, isAvailable, category, content, } = req.body;
             const parsedPrice = Number(priceRupiah);
             const parsedSeats = Number(seats);
-            const parsedAvailable = isAvailable === true || isAvailable === "true";
+            const parsedAvailable = isAvailable === true || isAvailable === 'true';
             if (!date)
-                throw "Date is required";
+                throw 'Date is required';
             const parsedDate = new Date(date);
             if (isNaN(parsedDate.getTime())) {
-                throw "Invalid date format";
+                throw 'Invalid date format';
             }
             if (!req.body.slug) {
                 req.body.slug = req.body.title
                     .toLowerCase()
                     .trim()
-                    .replace(/\s+/g, "-");
+                    .replace(/\s+/g, '-');
             }
             const data = {
                 title,
@@ -43,18 +42,18 @@ class EventController {
                 data.author = { connect: { email: req.author.email } };
             }
             else {
-                throw "SALAH! Tidak ada user/author yang login";
+                throw 'SALAH! Tidak ada user/author yang login';
             }
             const event = await prisma_1.default.event.create({ data });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! POST Event dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! POST Event dengan PRISMA',
                 event,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -91,70 +90,67 @@ class EventController {
             const event = await prisma_1.default.event.findMany({
                 where: filter,
                 include: { author: true },
-                orderBy: { createdAt: "desc" },
+                orderBy: { createdAt: 'desc' },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! GET Banyak Events dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! GET Banyak Events dengan PRISMA',
                 event,
             });
         }
         catch (err) {
             console.error(err);
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async getEventSlug(req, res) {
         try {
-            if (!req.params.slug)
-                throw "Slug tidak ditemukan";
             const event = await prisma_1.default.event.findUnique({
                 where: { slug: req.params.slug },
-                include: { author: true },
+                include: { author: true }, //! ini untuk GABUNGIN ke TABEL AUTHOR
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! GET 1 Event dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! GET 1 Event dengan PRISMA',
                 event,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async updateEvent(req, res) {
-        var _a;
         try {
             if (!req.file)
-                throw "UPLOAD FILE dulu kocak";
-            const link = `http://localhost:8000/api/public/events/${(_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.filename}`;
+                throw 'UPLOAD FILE dulu kocak';
+            const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
             const eventId = Number(req.params.id);
             if (isNaN(eventId)) {
                 return res
                     .status(400)
-                    .send({ status: "error", msg: "ID format SALAH" });
+                    .send({ status: 'error', msg: 'ID format SALAH' });
             }
-            const { _id, title, priceRupiah, date, location, seats, isAvailable, slug, category, content, } = req.body;
+            const { id, title, priceRupiah, date, location, seats, isAvailable, slug, category, content, } = req.body;
             const parsedPrice = Number(+priceRupiah);
             const parsedSeats = Number(+seats);
             if (!date)
-                throw "Date is required";
+                throw 'Date is required';
             const parsedDate = new Date(date);
             if (isNaN(parsedDate.getTime())) {
-                throw "Date tanggal SALAH FORMAT yaa";
+                throw 'Date tanggal SALAH FORMAT yaa';
             }
-            const parsedAvailable = isAvailable === true || isAvailable === "true";
+            const parsedAvailable = isAvailable === true || isAvailable === 'true';
             if (!slug) {
                 req.body.slug = req.body.title
                     .toLowerCase()
                     .trim()
-                    .replace(/\s+/g, "-");
+                    .replace(/\s+/g, '-');
             }
             const event = await prisma_1.default.event.update({
                 where: { id: eventId },
@@ -177,31 +173,30 @@ class EventController {
                 },
             });
             if (!event)
-                throw new Error("SALAH! Event GAGAL UPDATE dengan PRISMA");
+                throw new Error('SALAH! Event GAGAL UPDATE dengan PRISMA');
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! UPDATE Event dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! UPDATE Event dengan PRISMA',
                 event,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async editImage(req, res) {
-        var _a;
         try {
             if (!req.file)
-                throw "UPLOAD FILE dulu kocak";
-            const link = `http://localhost:8000/api/public/events/${(_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.filename}`;
+                throw 'UPLOAD FILE dulu kocak';
+            const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
             const existingImage = await prisma_1.default.event.findUnique({
                 where: { id: +req.params.id },
             });
             if (!existingImage)
-                throw new Error("event ID salah.");
+                throw new Error('event ID salah.');
             await prisma_1.default.event.update({
                 where: { id: +req.params.id },
                 data: {
@@ -209,13 +204,13 @@ class EventController {
                 },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! Edit Image Event success",
+                status: 'ok',
+                msg: 'Selamat! Edit Image Event success',
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -226,16 +221,16 @@ class EventController {
                 where: { id: +req.params.id },
             });
             if (!event)
-                throw "SALAH! ID Event tidak ditemukan";
+                throw 'SALAH! ID Event tidak ditemukan';
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! DELETE Event dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! DELETE Event dengan PRISMA',
                 event,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }

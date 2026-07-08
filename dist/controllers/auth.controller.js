@@ -19,7 +19,7 @@ class AuthController {
             try {
                 const email = req.body.email;
                 if (!email) {
-                    return res.status(400).json({ status: "error", msg: "Email required" });
+                    return res.status(400).json({ status: 'error', msg: 'Email required' });
                 }
                 let avatarUrl;
                 if (req.file) {
@@ -31,15 +31,15 @@ class AuthController {
                 let author = await prisma_1.default.author.findUnique({ where: { email } });
                 if (!author) {
                     return res.status(404).json({
-                        status: "error",
-                        msg: "Author with this email not found, cannot link",
+                        status: 'error',
+                        msg: 'Author with this email not found, cannot link',
                     });
                 }
                 author = await prisma_1.default.author.update({
                     where: { email: author.email },
                     data: {
                         email,
-                        avatar: avatarUrl !== null && avatarUrl !== void 0 ? avatarUrl : author.avatar,
+                        avatar: avatarUrl ?? author.avatar,
                     },
                 });
                 const user = await prisma_1.default.users.findUnique({ where: { email } });
@@ -51,22 +51,22 @@ class AuthController {
                 }
                 return res
                     .status(200)
-                    .json({ status: "ok", msg: "Linked User to Author", author });
+                    .json({ status: 'ok', msg: 'Linked User to Author', author });
             }
             catch (err) {
                 return res
                     .status(500)
-                    .json({ status: "error", msg: err.message || "Internal server error" });
+                    .json({ status: 'error', msg: err.message || 'Internal server error' });
             }
         };
     }
     async getAuth(req, res) {
         try {
-            const { name, email, avatar, provider, _isVerify } = req.body;
+            const { name, email, avatar, provider, isVerify } = req.body;
             if (!email) {
                 return res
                     .status(400)
-                    .json({ success: false, error: "Email required" });
+                    .json({ success: false, error: 'Email required' });
             }
             let user = await prisma_1.default.users.findUnique({ where: { email } });
             if (!user) {
@@ -83,10 +83,10 @@ class AuthController {
                     email: user.email,
                 };
                 const token = (0, jsonwebtoken_1.sign)(payload, secret_key, {
-                    expiresIn: "1d",
+                    expiresIn: '1d',
                 });
-                const templatePath = path_1.default.join(__dirname, "../handlebars", "template.hbs");
-                const templateSource = fs_1.default.readFileSync(templatePath, "utf-8");
+                const templatePath = path_1.default.join(__dirname, '../handlebars', 'template.hbs');
+                const templateSource = fs_1.default.readFileSync(templatePath, 'utf-8');
                 const compileTemplate = handlebars_1.default.compile(templateSource);
                 const html = compileTemplate({
                     name: req.body.name,
@@ -95,7 +95,7 @@ class AuthController {
                     link: `http://localhost:3000/verify/oauth/${token}`,
                 });
                 const transporter = nodemailer_1.default.createTransport({
-                    service: "gmail",
+                    service: 'gmail',
                     auth: {
                         user: mailuser,
                         pass: mailpass,
@@ -104,7 +104,7 @@ class AuthController {
                 await transporter.sendMail({
                     from: mailuser,
                     to: req.body.email,
-                    subject: "Verify New User from MAILER",
+                    subject: 'Verify New User from MAILER',
                     html: html,
                 });
             }
@@ -126,22 +126,21 @@ class AuthController {
                 });
             }
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! Create/ Update User dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! Create/ Update User dengan PRISMA',
                 user,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async verifyAuth(req, res) {
         try {
-            console.log("bE controller verifyUsers from custom.d.ts:", req.users);
-            const _user = await prisma_1.default.users.findUnique({
+            const user = await prisma_1.default.users.findUnique({
                 where: { email: req.users.email },
             });
             await prisma_1.default.users.update({
@@ -151,13 +150,13 @@ class AuthController {
                 },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! verifyAuth dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! verifyAuth dengan PRISMA',
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -168,16 +167,16 @@ class AuthController {
                 where: { email: req.users.email },
             });
             if (!user)
-                throw "SALAH! Email User tidak ditemukan";
+                throw 'SALAH! Email User tidak ditemukan';
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! DELETE User dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! DELETE User dengan PRISMA',
                 user,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }

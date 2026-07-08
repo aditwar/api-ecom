@@ -18,22 +18,27 @@ class App {
         this.routes();
     }
     configure() {
-        this.app.use((0, cors_1.default)({ origin: "http://localhost:3000", credentials: true }));
+        this.app.use((0, cors_1.default)({ origin: 'http://localhost:3000', credentials: true }));
+        //! BACKEND ALWAYS STORES JSON FILE
         this.app.use(express_1.default.json());
-        this.app.use("/api/public", express_1.default.static(path_1.default.join(__dirname, "../public")));
+        this.app.use('/api/public', express_1.default.static(path_1.default.join(__dirname, '../public')));
     }
     routes() {
-        this.app.get("/api", (req, res) => {
-            res.send("Selamat! Sudah nyambung API");
+        this.app.get('/api', (req, res) => {
+            res.send('Selamat! Sudah nyambung API');
         });
+        //! AUTH ROUTER disini
         const authRouter = new auth_router_1.AuthRouter();
-        this.app.use("/api/auth", authRouter.getRouter());
+        this.app.use('/api/auth', authRouter.getRouter());
+        //! AUTHOR ROUTER disini
         const authorRouter = new author_router_1.AuthorRouter();
-        this.app.use("/api/author", authorRouter.getRouter());
+        this.app.use('/api/author', authorRouter.getRouter());
+        //! EVENT ROUTER disini
         const eventRouter = new event_router_1.EventRouter();
-        this.app.use("/api/events", eventRouter.getRouter());
+        this.app.use('/api/events', eventRouter.getRouter());
+        //! ORDER ROUTER disini
         const orderRouter = new order_router_1.OrderRouter();
-        this.app.use("/api/order", orderRouter.getRouter());
+        this.app.use('/api/order', orderRouter.getRouter());
     }
     start() {
         this.app.listen(PORT, () => {

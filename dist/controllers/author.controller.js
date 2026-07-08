@@ -19,14 +19,14 @@ class AuthorController {
         try {
             const author = await prisma_1.default.author.findMany();
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! GET Author dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! GET Author dengan PRISMA',
                 author,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -37,16 +37,16 @@ class AuthorController {
                 where: { email: req.author.email },
             });
             if (!author)
-                throw "SALAH! email Author tidak ditemukan";
+                throw 'SALAH! email Author tidak ditemukan';
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! GET email Author dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! GET email Author dengan PRISMA',
                 author,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -58,14 +58,14 @@ class AuthorController {
                 where: { name },
             });
             if (existNameAuthor)
-                throw "SALAH! Name sudah pernah dipakai yaa ...";
+                throw 'SALAH! Name sudah pernah dipakai yaa ...';
             const existEmailAuthor = await prisma_1.default.author.findUnique({
                 where: { email },
             });
             if (existEmailAuthor)
-                throw "SALAH! Email sudah pernah dipakai yaa ...";
+                throw 'SALAH! Email sudah pernah dipakai yaa ...';
             if (password !== confirmPassword)
-                throw "SALAH! Password dan Confirm Password tidak sama yaa ...";
+                throw 'SALAH! Password dan Confirm Password tidak sama yaa ...';
             const salt = await (0, bcryptjs_1.genSalt)(10);
             const hashPassword = await (0, bcryptjs_1.hash)(password, salt);
             const author = await prisma_1.default.author.create({
@@ -75,10 +75,10 @@ class AuthorController {
                 email: author.email,
             };
             const token = (0, jsonwebtoken_1.sign)(payload, secret_key, {
-                expiresIn: "1d",
+                expiresIn: '1d',
             });
-            const templatePath = path_1.default.join(__dirname, "../handlebars", "template.hbs");
-            const templateSource = fs_1.default.readFileSync(templatePath, "utf-8");
+            const templatePath = path_1.default.join(__dirname, '../handlebars', 'template.hbs');
+            const templateSource = fs_1.default.readFileSync(templatePath, 'utf-8');
             const compileTemplate = handlebars_1.default.compile(templateSource);
             const html = compileTemplate({
                 name: req.body.name,
@@ -88,7 +88,7 @@ class AuthorController {
                 link: `http://localhost:3000/verify/${token}`,
             });
             const transporter = nodemailer_1.default.createTransport({
-                service: "gmail",
+                service: 'gmail',
                 auth: {
                     user: mailuser,
                     pass: mailpass,
@@ -97,25 +97,25 @@ class AuthorController {
             await transporter.sendMail({
                 from: mailuser,
                 to: req.body.email,
-                subject: "Verify New User from MAILER",
+                subject: 'Verify New User from MAILER',
                 html: html,
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! Author CREATED dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! Author CREATED dengan PRISMA',
                 author,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async verifyAuthor(req, res) {
         try {
-            const _author = await prisma_1.default.author.findUnique({
+            const author = await prisma_1.default.author.findUnique({
                 where: { email: req.author.email },
             });
             await prisma_1.default.author.update({
@@ -123,13 +123,13 @@ class AuthorController {
                 data: { isVerify: true },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! verifyAuthor dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! verifyAuthor dengan PRISMA',
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -141,56 +141,55 @@ class AuthorController {
                 where: { email: email },
             });
             if (!loginEmailAuthor)
-                throw "SALAH! Email Author tidak ditemukan dengan PRISMA";
+                throw 'SALAH! Email Author tidak ditemukan dengan PRISMA';
             if (!loginEmailAuthor.isVerify)
-                throw "BELUM ADA VERIFIKASI EMAIL, cek Email dulu yaa";
+                throw 'BELUM ADA VERIFIKASI EMAIL, cek Email dulu yaa';
             const loginPasswordAuthor = await (0, bcryptjs_1.compare)(password, loginEmailAuthor.password);
             if (!loginPasswordAuthor)
-                throw "SALAH! Password Author salah dengan PRISMA, bcryptjs";
+                throw 'SALAH! Password Author salah dengan PRISMA, bcryptjs';
             const roleEmailAuthor = {
                 email: loginEmailAuthor.email,
                 role: loginEmailAuthor.role,
             };
             const tokenAuthor = (0, jsonwebtoken_1.sign)(roleEmailAuthor, secret_key, {
-                expiresIn: "1d",
+                expiresIn: '1d',
             });
             if (!tokenAuthor)
-                throw "GAGAL STORE TOKEN";
+                throw 'GAGAL STORE TOKEN';
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! LOGIN Author dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! LOGIN Author dengan PRISMA',
                 tokenAuthor,
                 author: loginEmailAuthor,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async editAvatar(req, res) {
-        var _a, _b;
         try {
             if (!req.file)
-                throw "UPLOAD FILE dulu kocak";
-            const _existingAuthor = await prisma_1.default.author.findUnique({
-                where: { email: (_a = req.author) === null || _a === void 0 ? void 0 : _a.email },
+                throw 'UPLOAD FILE dulu kocak';
+            const existingAuthor = await prisma_1.default.author.findUnique({
+                where: { email: req.author?.email },
             });
-            const link = `http://localhost:8000/api/public/avatar/${(_b = req === null || req === void 0 ? void 0 : req.file) === null || _b === void 0 ? void 0 : _b.filename}`;
+            const link = `http://localhost:8000/api/public/avatar/${req?.file?.filename}`;
             await prisma_1.default.author.update({
                 where: { email: req.author.email },
                 data: { avatar: link },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! Edit Avatar success with uploader",
+                status: 'ok',
+                msg: 'Selamat! Edit Avatar success with uploader',
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -200,7 +199,7 @@ class AuthorController {
             const { name, email, password, role, avatar, usersEmail } = req.body;
             const link = req.file
                 ? `http://localhost:8000/api/public/avatar/${req.file.filename}`
-                : avatar === "null"
+                : avatar === 'null'
                     ? null
                     : avatar;
             const author = await prisma_1.default.author.update({
@@ -215,16 +214,16 @@ class AuthorController {
                 },
             });
             if (!author)
-                throw new Error("SALAH! Author GAGAL UPDATE dengan PRISMA");
+                throw new Error('SALAH! Author GAGAL UPDATE dengan PRISMA');
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! UPDATE Author dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! UPDATE Author dengan PRISMA',
                 author,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
@@ -241,7 +240,7 @@ class AuthorController {
             if (!author || !user) {
                 return res
                     .status(404)
-                    .json({ ok: false, msg: "User atau Author tidak ditemukan" });
+                    .json({ ok: false, msg: 'User atau Author tidak ditemukan' });
             }
             const updatedUser = await prisma_1.default.users.update({
                 where: { email: usersEmail },
@@ -251,29 +250,29 @@ class AuthorController {
                 },
             });
             res.status(200).send({
-                status: "ok",
-                msg: "Selamat! Link Author dengan PRISMA",
+                status: 'ok',
+                msg: 'Selamat! Link Author dengan PRISMA',
                 user: updatedUser,
                 author,
             });
         }
         catch (err) {
             res.status(400).send({
-                status: "error",
+                status: 'error',
                 msg: err.message || err.toString(),
             });
         }
     }
     async deleteAuthor(req, res) {
         try {
-            const { _id, email } = req.body;
+            const { id, email } = req.body;
             const lastAuthor = await prisma_1.default.author.findFirst({
-                orderBy: { id: "desc" },
+                orderBy: { id: 'desc' },
             });
             if (!lastAuthor) {
                 return res
                     .status(400)
-                    .json({ ok: false, msg: "Tidak ada Author terakhir" });
+                    .json({ ok: false, msg: 'Tidak ada Author terakhir' });
             }
             await prisma_1.default.event.updateMany({
                 where: { authorEmail: email },
@@ -290,7 +289,7 @@ class AuthorController {
             });
             res.status(200).json({
                 ok: true,
-                msg: "Author berhasil dihapus, Event dialihkan, Order & Invoice dihapus",
+                msg: 'Author berhasil dihapus, Event dialihkan, Order & Invoice dihapus',
                 delAuthor,
             });
         }

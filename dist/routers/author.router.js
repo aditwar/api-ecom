@@ -13,15 +13,20 @@ class AuthorRouter {
         this.initializeRoutes();
     }
     initializeRoutes() {
-        this.router.get("/", this.authorController.getAuthor);
-        this.router.get("/:id", this.authorController.getAuthorId);
-        this.router.post("/", validator_1.validateRegister, this.authorController.createAuthor);
-        this.router.patch("/verify", token_1.verifyToken, this.authorController.verifyAuthor);
-        this.router.post("/login", validator_1.validateLogin, this.authorController.loginAuthor);
-        this.router.patch("/avatar", token_1.verifyToken, (0, uploader_1.uploader)("avatar", "/avatar").single("avatar"), this.authorController.editAvatar);
-        this.router.patch("/:id", token_1.verifyToken, (0, uploader_1.uploader)("avatar", "/avatar").single("avatar"), this.authorController.updateAuthor);
-        this.router.patch("/link", this.authorController.linkAuthorUsers);
-        this.router.delete("/:id", this.authorController.deleteAuthor);
+        this.router.get('/', 
+        // verifyToken,
+        // checkAdmin,
+        this.authorController.getAuthor);
+        this.router.get('/:id', this.authorController.getAuthorId);
+        this.router.post('/', validator_1.validateRegister, this.authorController.createAuthor);
+        this.router.patch('/verify', token_1.verifyToken, this.authorController.verifyAuthor);
+        this.router.post('/login', validator_1.validateLogin, this.authorController.loginAuthor);
+        this.router.patch('/avatar', token_1.verifyToken, (0, uploader_1.uploader)('avatar', '/avatar').single('avatar'), this.authorController.editAvatar);
+        this.router.patch('/:id', token_1.verifyToken, (0, uploader_1.uploader)('avatar', '/avatar').single('avatar'), this.authorController.updateAuthor);
+        this.router.patch('/link', 
+        // verifyToken,
+        this.authorController.linkAuthorUsers);
+        this.router.delete('/:id', this.authorController.deleteAuthor);
     }
     getRouter() {
         return this.router;

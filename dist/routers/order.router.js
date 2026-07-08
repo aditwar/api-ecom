@@ -11,10 +11,10 @@ class OrderRouter {
         this.initializeRoutes();
     }
     initializeRoutes() {
-        this.router.post("/", token_1.verifyToken, this.orderController.createOrder);
-        this.router.get("/", this.orderController.getOrder);
-        this.router.get("/:id", this.orderController.getOrderId);
-        this.router.delete("/:id", this.orderController.deleteOrder);
+        this.router.post('/', token_1.verifyToken, this.orderController.createOrder);
+        this.router.get('/', this.orderController.getOrder);
+        this.router.get('/:id', this.orderController.getOrderId);
+        this.router.delete('/:id', this.orderController.deleteOrder);
     }
     getRouter() {
         return this.router;
