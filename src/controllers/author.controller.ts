@@ -7,11 +7,11 @@ import path from 'path';
 import fs from 'fs';
 import Handlebars from 'handlebars';
 
-const secret_key = process.env.SECRET_KEY_JWT || 'Pass1234';
+const secret_key = process.env.SECRET_KEY_JWT;
 
-const mailuser = process.env.MAIL_USER || 'wardanaaditya49@gmail.com';
+const mailuser = process.env.MAIL_USER;
 
-const mailpass = process.env.MAIL_PASS || 'sfph lflq amkm ejmd';
+const mailpass = process.env.MAIL_PASS;
 
 export class AuthorController {
   async getAuthor(req: Request, res: Response) {
