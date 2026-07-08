@@ -7,9 +7,9 @@ import fs from 'fs'; //file sistem, saat handlebar
 import nodemailer from 'nodemailer';
 import Handlebars from 'handlebars';
 
-const secret_key = process.env.SECRET_KEY_JWT || 'Pass1234';
-const mailuser = process.env.MAIL_USER || 'wardanaaditya49@gmail.com';
-const mailpass = process.env.MAIL_PASS || 'sfph lflq amkm ejmd';
+const secret_key = process.env.SECRET_KEY_JWT;
+const mailuser = process.env.MAIL_USER;
+const mailpass = process.env.MAIL_PASS;
 
 export class AuthController {
   async getAuth(req: Request, res: Response) {
