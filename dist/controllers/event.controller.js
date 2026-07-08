@@ -6,10 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventController = void 0;
 const prisma_1 = __importDefault(require("../prisma"));
 const client_1 = require("@prisma/client");
+const base_url = process.env.BASE_URL_API;
 class EventController {
     async createEvent(req, res) {
         try {
-            const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+            const link = `${base_url}/public/events/${req?.file?.filename}`;
             const { title, slug, priceRupiah, date, location, seats, isAvailable, category, content, } = req.body;
             const parsedPrice = Number(priceRupiah);
             const parsedSeats = Number(seats);
@@ -129,7 +130,7 @@ class EventController {
         try {
             if (!req.file)
                 throw 'UPLOAD FILE dulu kocak';
-            const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+            const link = `${base_url}/public/events/${req?.file?.filename}`;
             const eventId = Number(req.params.id);
             if (isNaN(eventId)) {
                 return res
@@ -191,7 +192,7 @@ class EventController {
         try {
             if (!req.file)
                 throw 'UPLOAD FILE dulu kocak';
-            const link = `http://localhost:8000/api/public/events/${req?.file?.filename}`;
+            const link = `${base_url}/public/events/${req?.file?.filename}`;
             const existingImage = await prisma_1.default.event.findUnique({
                 where: { id: +req.params.id },
             });
