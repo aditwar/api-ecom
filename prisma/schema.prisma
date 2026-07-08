@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// provider harus diganti mysql
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//! Ini untuk menentukan Authorization
+enum Role {
+  Buyer
+  Seller
+}
+
+// ini untuk Categori ada apa saja jenisnya
+enum Category {
+  Concert
+  Sport
+  Movie
+}
+
+// ini untuk variasi Location
+enum Location {
+  Jakarta
+  Bandung
+  Semarang
+  Surabaya
+  Solo
+  Jogja
+  Bali
+}
+
+model Users {
+  // Int: Typedata, @id: PrimaryKey, @default: secara default itu autoincrement
+  id       Int     @id @default(autoincrement()) // @unique itu harus UNIK
+  name     String  @unique
+  email    String  @unique
+  provider String  @default("google") //! provider ini untuk menyimpan info login pakai google, facebook, dll, defaultnya google
+  avatar   String?
+
+  //! role ini sesuaikan dengan enum Role yg atas
+  isVerify Boolean @default(false)
+
+  // Biar tau dibuat kapan dan terakhir update kapan
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorEmail String?
+  author      Author? @relation(fields: [authorEmail], references: [email], onDelete: Cascade) //! RELASI dgn AUTHOR OPTIONAL, karena bisa saja user ini login pakai google, tapi belum tentu dia punya akun AUTHOR, jadi ini bisa NULL
+}
+
+model Author {
+  // Int: Typedata, @id: PrimaryKey, @default: secara default itu autoincrement
+  id       Int    @id @default(autoincrement()) // @unique itu harus UNIK
+  name     String @unique
+  email    String @unique
+  password String
+
+  //! role ini sesuaikan dengan enum Role yg atas
+  role Role @default(Buyer)
+
+  //! ini VERIFY EMAIL saat REGISTER (createAuthor)
+  isVerify Boolean @default(false)
+
+  // Photoprofile, dan ?: tidak wajib diisi
+  avatar    String?
+  // Biar tau dibuat kapan dan terakhir update kapan
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Event Event[] //! ini OTO muncul stlh dibuat RELASI dgn EVENT, ada [] menunjukkan hub OneToMany
+  Order Order[]
+  users Users[]
+}
+
+// ini untuk CONTROL pembuatan EVENT
+model Event {
+  id          Int      @id @unique @default(autoincrement())
+  title       String
+  priceRupiah Int      @default(0)
+  date        DateTime @default(now())
+  location    Location
+  seats       Int      @default(1)
+  isAvailable Boolean  @default(true)
+  slug        String   @unique
+  category    Category //! ini menggunakan tipe data Category yg sudah didefine enum
+  content     String   @db.LongText //! db.Long.Text untuk memberi tau ini lebih dari 225 karakter
+  image       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorEmail String? //! ForeignKEY yg dipakai sebagai ID untuk tabel yg lain, shg ini mjd hubungan
+  author      Author? @relation(fields: [authorEmail], references: [email], onDelete: Cascade) //! RELASI dgn AUTHOR
+
+  Order        Order[]
+  Verification Verification[]
+}
+
+model Order {
+  id        Int @id @default(autoincrement())
+  pricePaid Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventId     Int
+  authorEmail String
+
+  event  Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  author Author @relation(fields: [authorEmail], references: [email], onDelete: Cascade)
+}
+
+model Verification {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  eventId Int
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
